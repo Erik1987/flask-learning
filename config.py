@@ -11,9 +11,9 @@ class Config:
         ['true', 'on', '1']
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    Projekti_MAIL_SUBJECT_PREFIX = '[Projekti]'
-    Projekti_MAIL_SENDER = 'Projekti Admin <Projekti@example.com>'
-    Projekti_ADMIN = os.environ.get('FP_ADMIN')
+    PROJEKTI_MAIL_SUBJECT_PREFIX = 'Flaskprojekti'
+    PROJEKTI_MAIL_SENDER = 'Projekti Admin <Projekti@example.com>'
+    PROJEKTI_ADMIN = os.environ.get('FP_ADMIN')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     @staticmethod
@@ -37,11 +37,27 @@ class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 
+class LocalConfig(Config):
+
+    DEBUG = True
+    DB_USERNAME = os.environ.get('LOCAL_DB_USERNAME')
+    DB_PASSWORD = os.environ.get('LOCAL_DB_PASSWORD')
+    DB_NAME = os.environ.get('LOCAL_DB_NAME')
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://' + DB_USERNAME + ':' + DB_PASSWORD + '@localhost:3306/' + DB_NAME
+    # SQLALCHEMY_ECHO = True (dokumentaatio)
+    SQLALCHEMY_ECHO = "debug"
+    # WTF_CSRF_ENABLED = False
+
+class HerokuConfig(Config):
+    SQLALCHEMY_DATABASE_URI = os.environ.get('CLEARDB_DATABASE_URL')
+    SQLALCHEMY_ECHO = "debug"
+    # WTF_CSRF_ENABLED = False    
 
 config = {
     'development': DevelopmentConfig,
     'testing': TestingConfig,
     'production': ProductionConfig,
-
+    'local': LocalConfig,
+    'heroku': HerokuConfig,
     'default': DevelopmentConfig
 }
